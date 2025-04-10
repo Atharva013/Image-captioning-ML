@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ AI Vision | Image Caption Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-blue: #08f;
+            --neon-purple: #a78bfa;
+            --dark-bg: #0f0f15;
+            --card-bg: #1a1a25;
+            --text-light: #e2e8f0;
+            --text-dim: #94a3b8;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-light);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            overflow-x: hidden;
+        }
+
+        .cyber-card {
+            width: 90%;
+            max-width: 700px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 0 20px rgba(0, 136, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cyber-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(8, 144, 255, 0.1) 0%, transparent 70%);
+            animation: rotate 15s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(138, 180, 248, 0.3);
+        }
+
+        .upload-box {
+            border: 2px dashed rgba(138, 180, 248, 0.3);
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            margin: 2rem 0;
+            transition: all 0.3s;
+            position: relative;
+            background: rgba(30, 41, 59, 0.3);
+            cursor: pointer;
+        }
+
+        .upload-box:hover {
+            border-color: var(--neon-blue);
+            background: rgba(30, 41, 59, 0.5);
+            transform: translateY(-3px);
+        }
+
+        .upload-box::after {
+            content: '↓ DRAG & DROP OR CLICK TO UPLOAD ↓';
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-label {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+            color: white;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(8, 144, 255, 0.3);
+        }
+
+        .file-label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(8, 144, 255, 0.4);
+        }
+
+        .submit-btn {
+            margin-top: 1.5rem;
+            padding: 0.8rem 2.5rem;
+            background: transparent;
+            color: var(--neon-blue);
+            border: 2px solid var(--neon-blue);
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        .submit-btn:hover {
+            background: rgba(8, 144, 255, 0.1);
+            box-shadow: 0 0 15px rgba(8, 144, 255, 0.3);
+        }
+
+        .result-container {
+            margin-top: 2rem;
+            padding: 2rem;
+            border-radius: 12px;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(138, 180, 248, 0.1);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .uploaded-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            border: 1px solid rgba(138, 180, 248, 0.2);
+            box-shadow: 0 0 20px rgba(8, 144, 255, 0.1);
+        }
+
+        .caption-box {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid #10b981;
+            border-radius: 8px;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .caption-box::before {
+            content: 'AI VISION';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            color: rgba(16, 185, 129, 0.3);
+        }
+
+        .typing-animation {
+            display: inline-block;
+            overflow: hidden;
+            border-right: 2px solid var(--neon-blue);
+            white-space: nowrap;
+            animation: typing 2s steps(30, end), blink-caret 0.75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: var(--neon-blue); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .cyber-card { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="cyber-card">
+        <h1>🔮 AI IMAGE CAPTIONER</h1>
+        
+        <form method="POST" enctype="multipart/form-data">
+            <div class="upload-box" id="drop-zone">
+                <input type="file" id="file-upload" class="file-input" name="image" accept="image/*" required>
+                <label for="file-upload" class="file-label">SELECT IMAGE</label>
+                <div id="file-name" style="margin-top: 1rem; color: var(--text-dim);"></div>
+            </div>
+            
+            <button type="submit" class="submit-btn">GENERATE CAPTION</button>
+        </form>
+        
+        {% if image_url %}
+        <div class="result-container">
+            <h3>UPLOADED IMAGE</h3>
+            <img src="{{ image_url }}" alt="Uploaded Image" class="uploaded-image">
+            
+            <div class="caption-box">
+                <h3>✨ AI-GENERATED CAPTION</h3>
+                <p><b class="typing-animation">{{ caption }}</b></p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // File name display
+        document.getElementById('file-upload').addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
+            document.getElementById('file-name').textContent = fileName;
+        });
+
+        // Drag & drop effect
+        const dropZone = document.getElementById('drop-zone');
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = 'var(--neon-blue)';
+            dropZone.style.transform = 'translateY(-5px)';
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.style.borderColor = 'rgba(138, 180, 248, 0.3)';
+            dropZone.style.transform = 'translateY(0)';
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = 'rgba(138, 180, 248, 0.3)';
+            document.getElementById('file-upload').files = e.dataTransfer.files;
+            document.getElementById('file-name').textContent = e.dataTransfer.files[0].name;
+        });
+    </script>
+</body>
+</html>
