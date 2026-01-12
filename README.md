@@ -226,5 +226,6 @@ http://127.0.0.1:5000/
 ## Author
 
 **Atharva Jadhav**
+*Email- atharvajadhav333@gmail.com*
 
 ---
